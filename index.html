@@ -19,7 +19,7 @@
     
     <div class="container mt-5 text-center">
         <h1>Search Content</h1>
-        <input type="text" id="form"class="form-control my-2 ">
+        <input type="text" id="form"class="form-control my-2 " onkeypress="pulsar(event)">
         <button class="btn btn-info mb-2" id="button">Search</button>
         <div class="mt-5" id="searchContentNull">
 
@@ -107,8 +107,14 @@
             content.innerHTML = ''
             searchContentNull.innerHTML = `<h1>No results found.</h1>`
         }
-        function gotData(data){
-            println(data);
+        function pulsar(e) {
+            if (e.keyCode === 13 && !e.shiftKey) {
+                e.preventDefault();
+                var boton = document.getElementById("button");
+                boton.click();
+                //document.getElementById
+                //document.element(boton).triggerHandler('click');
+            }
         }
     </script>
   </body>
