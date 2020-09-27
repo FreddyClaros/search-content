@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    
+
     <!-- JavaScript -->
     <!-- jQuery first, then Bootstrap JS -->
     <script src="jquery/jquery-3.2.1.slim.min.js"></script>
@@ -17,7 +17,99 @@
   </head>
   <body>
     
+    <div class="container mt-5 text-center">
+        <h1>Search Content</h1>
+        <input type="text" id="form"class="form-control my-2 ">
+        <button class="btn btn-info mb-2" id="button">Search</button>
+        <div class="mt-5" id="searchContentNull">
 
-    <h1>Hello, world!</h1>
+        </div>
+        <div class="tableResults mt-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col"  class="text-left">Description</th>
+                    </tr>
+                </thead>
+                <tbody id="content"> 
+                    <tr>
+                        <th scope="row"></th>
+                        <th scope="row"></th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $('.tableResults').hide();
+        const form = document.querySelector('#form');
+        const button = document.querySelector('#button');
+
+        const prepareURL = ()=>{
+            //console.log(form.value);
+            const urlItunes = "https://cors-anywhere.herokuapp.com/https://itunes.apple.com/search?term="; //"https://cors-anywhere.herokuapp.com/" fue incluido para arreglar un error de 
+            const numberItems = "25";
+            const searchText = form.value.toLowerCase().trim(); //convierte la consulta a minusculas y elimina los espacios delante y atras de la consulta
+            const searchURL = urlItunes+searchText.replace(/\s/g,"+"); //concatena la busqueda al formato de la url y cambia los espacios por signo +
+            const searchURL2 = searchURL+"&limit=25";
+            var myHeaders = new Headers();
+            
+            fetch(searchURL, {
+                method: 'GET',
+                headers: myHeaders,
+                mode: 'cors',
+                cache: 'default'
+            })
+            .then(resp => resp.json())
+            .then(data=> {
+                //table(data);
+                if(data.results[0] == null){
+                    sinResultados();
+                }else{
+                    datos(data);
+                }
+            })
+            .catch(error => console.log('Authorization failed: ' + error.message)); //captura el error en consola si es que faya la asignacion a fetch
+            console.log(searchURL);
+        }
+        button.addEventListener('click', prepareURL);
+        
+        function datos(data){
+            $('.tableResults').show();
+            searchContentNull.innerHTML = ''
+            content.innerHTML = ''
+            for (i = 0; i < 10; i++) {
+                var albumImage = data.results[i].artworkUrl100;
+                var albumName = data.results[i].collectionName;
+                var trackName = data.results[i].trackName;
+                var nameArtist = data.results[i].artistName;
+                var price = data.results[i].collectionPrice;
+                content.innerHTML +=
+                `
+                <tr>
+                    <th scope="row">
+                        <img src="${albumImage}" windth="100px" class="img-fluid">
+                    </th>
+                    <th scope="row">
+                        <p class="text-left">Name of the album: <a class="font-weight-normal">${albumName}</a></p>
+                        <p class="text-left">Track name: <a class="font-weight-normal">${trackName}</a></p>
+                        <p class="text-left">Name of the Artist: <a class="font-weight-normal">${nameArtist}</a></p>
+                        <p class="text-left">Price: <a class="font-weight-normal">${price+" $"}</a></p>
+                    </th>
+                </tr>
+                `
+            } 
+        }
+        function sinResultados(){
+            $('.tableResults').hide();
+            content.innerHTML = ''
+            searchContentNull.innerHTML = `<h1>No results found.</h1>`
+        }
+        function gotData(data){
+            println(data);
+        }
+    </script>
   </body>
 </html>
